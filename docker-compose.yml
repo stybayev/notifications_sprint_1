@@ -1,0 +1,34 @@
+version: "3.9"
+
+x-configs: &common_config
+  restart: always
+
+services:
+  django_admin:
+    <<: *common_config
+    build: ./admin
+    volumes:
+      - .:/code
+    ports:
+      - ${ADMIN_PORT}:${ADMIN_PORT}
+    command: ./start.sh
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+  db:
+    <<: *common_config
+    image: ghcr.io/dbsystel/postgresql-partman:14
+    container_name: db
+    shm_size: 1g
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    env_file:
+      - ./.env
+
+
+volumes:
+  postgres_data:
