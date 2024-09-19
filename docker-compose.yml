@@ -11,7 +11,8 @@ services:
       - .:/code
     ports:
       - ${ADMIN_PORT}:${ADMIN_PORT}
-    command: ./start.sh
+    # command: ./start.sh
+    command: /bin/sh -c "while true; do sleep 3000; done"
     depends_on:
       - db
     env_file:
