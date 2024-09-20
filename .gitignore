@@ -24,3 +24,8 @@ env/
 
 # tmp
 tmp/
+
+# static/media
+static/
+**/static
+media
