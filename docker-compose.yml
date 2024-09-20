@@ -7,10 +7,11 @@ services:
   django_admin:
     <<: *common_config
     build: ./admin
-    volumes:
       - ./admin:/code
+      - static_volume:/code/static
+      - media_volume:/code/media
     ports:
-      - ${ADMIN_PORT}:${ADMIN_PORT}
+      - "${ADMIN_PORT}:8080"
     command: /start.sh
     depends_on:
       - db
@@ -29,6 +30,20 @@ services:
     env_file:
       - ./.env
 
+  nginx:
+    image: nginx:1.24
+    volumes:
+      - ./tmp/logs/nginx/:/var/log/nginx/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs/:/etc/nginx/conf.d/:ro
+      - static_volume:/code/staticfiles:ro
+      - media_volume:/code/media:ro
+    depends_on:
+      - django_admin
+    ports:
+      - "80:80"
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
