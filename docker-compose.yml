@@ -8,11 +8,11 @@ services:
     <<: *common_config
     build: ./admin
     volumes:
-      - .:/code
+      - ./admin:/code
     ports:
       - ${ADMIN_PORT}:${ADMIN_PORT}
-    # command: ./start.sh
-    command: /bin/sh -c "while true; do sleep 3000; done"
+    command: /start.sh
+    # command: /bin/sh -c "while true; do sleep 3000; done"
     depends_on:
       - db
     env_file:

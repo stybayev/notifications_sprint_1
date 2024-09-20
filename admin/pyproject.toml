@@ -25,6 +25,7 @@ djangochannelsrestframework = "^1.2.0"
 responses = "^0.25.3"
 daphne = "^4.1.2"
 amqp = "^5.2.0"
+gunicorn = "^23.0.0"
 
 
 [build-system]
