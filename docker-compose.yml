@@ -7,6 +7,7 @@ services:
   django_admin:
     <<: *common_config
     build: ./admin
+    volumes:
       - ./admin:/code
       - static_volume:/code/static
       - media_volume:/code/media
@@ -36,8 +37,8 @@ services:
       - ./tmp/logs/nginx/:/var/log/nginx/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/configs/:/etc/nginx/conf.d/:ro
-      - static_volume:/code/staticfiles:ro
-      - media_volume:/code/media:ro
+      - static_volume:/data/static:ro
+      - media_volume:/data/media:ro
     depends_on:
       - django_admin
     ports:
