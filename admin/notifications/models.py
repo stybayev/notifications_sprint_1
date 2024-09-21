@@ -11,7 +11,6 @@ from notifications.enums import NotificationTypeChoice, StatusChoice
 
 User = get_user_model()
 
-
 logger = logging.getLogger(__name__)
 
 

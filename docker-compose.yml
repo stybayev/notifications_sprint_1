@@ -37,8 +37,8 @@ services:
       - ./tmp/logs/nginx/:/var/log/nginx/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/configs/:/etc/nginx/conf.d/:ro
-      - static_volume:/data/static:ro
-      - media_volume:/data/media:ro
+      - ./django_admin/static:/data/static:ro
+      - ./django_admin/media:/data/media:ro
     depends_on:
       - django_admin
     ports:
