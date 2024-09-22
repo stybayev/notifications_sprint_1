@@ -30,6 +30,11 @@ services:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     <<: *common_config
@@ -79,7 +84,7 @@ services:
       - ./.env
     depends_on:
       - django_admin
-      - rabbitmq
+      - db
     deploy:
       resources:
         limits:
@@ -96,8 +101,8 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - django_admin
-      - rabbitmq
+      db:
+        condition: service_healthy
     deploy:
       resources:
         limits:
