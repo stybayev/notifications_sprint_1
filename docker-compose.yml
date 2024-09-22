@@ -71,12 +71,15 @@ services:
   celery:
     build: ./admin
     volumes:
-      - .:/code
+      - ./admin:/code
     command: celery -A core worker -l info --concurrency 4
     environment:
       - TZ=Asia/Almaty
     env_file:
       - ./.env
+    depends_on:
+      - django_admin
+      - rabbitmq
     deploy:
       resources:
         limits:
@@ -86,12 +89,15 @@ services:
   celery-beat:
     build: ./admin
     volumes:
-      - .:/code
+      - ./admin:/code
     command: celery -A core beat -l info
     environment:
       - TZ=Asia/Almaty
     env_file:
       - ./.env
+    depends_on:
+      - django_admin
+      - rabbitmq
     deploy:
       resources:
         limits:
