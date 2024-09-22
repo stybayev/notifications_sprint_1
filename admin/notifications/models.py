@@ -98,7 +98,7 @@ class NotificationToUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
 
-    retry_count = models.IntegerField(verbose_name="Повторных попыток", default=0)
+    retry_count = models.IntegerField(verbose_name="Количество повторных попыток", default=0)
     status = models.CharField(
         verbose_name="Статус",
         max_length=10,

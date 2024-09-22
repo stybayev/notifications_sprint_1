@@ -23,3 +23,7 @@ from core import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+admin.site.site_header = 'Административная панель для рассылок'
+admin.site.index_title = 'Административная панель для рассылок'
+admin.site.site_title = 'Административная панель для рассылок'

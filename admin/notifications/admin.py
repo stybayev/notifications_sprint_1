@@ -1,6 +1,6 @@
 import logging
 from http import HTTPStatus
-
+import os
 from django.contrib import admin, messages
 from notifications.models import Notification
 from notifications.models import Template as TemplateModel
@@ -9,7 +9,7 @@ import sentry_sdk
 from sentry_sdk import capture_message
 
 logger = logging.getLogger(__name__)
-sentry_sdk.init(dsn="https://7e322a912461958b85dcdf23716aeff5@o4507457845592064.ingest.de.sentry.io/4507457848016976")
+sentry_sdk.init(dsn=str(os.environ.get('SENTRY_SDK_DSN')), )
 
 
 class NotificationAdminUsersInline(admin.TabularInline):
