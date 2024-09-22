@@ -26,6 +26,7 @@ responses = "^0.25.3"
 daphne = "^4.1.2"
 amqp = "^5.2.0"
 gunicorn = "^23.0.0"
+sentry-sdk = {extras = ["django"], version = "^2.14.0"}
 
 
 [build-system]
