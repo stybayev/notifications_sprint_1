@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
-from notifications.enums import NotificationTypeChoice, StatusChoice
+from notifications.enums import StatusType, NotificationType
 
 User = get_user_model()
 
@@ -37,8 +37,8 @@ class Notification(models.Model):
     type = models.CharField(
         "Тип рассылки",
         max_length=50,
-        choices=NotificationTypeChoice.choices,
-        default=NotificationTypeChoice.GROUP,
+        choices=NotificationType.enum_to_choices(),
+        default=NotificationType.GROUP.value,
     )
     users = models.ManyToManyField(
         User, related_name="notifications", through="NotificationToUser"
@@ -69,7 +69,7 @@ class Notification(models.Model):
     def send(self) -> Annotated[int, "Status code"]:
         ids = (
             self.recipients_ids
-            if self.type == NotificationTypeChoice.GROUP
+            if self.type == NotificationType.GROUP.value
             else self.recipients_ids[0]
         )
         usernames = [user.get_full_name() for user in self.recipients]
@@ -77,7 +77,7 @@ class Notification(models.Model):
             "title": self.template.title,
             "text": self.template.content,
             "username": usernames
-            if self.type == NotificationTypeChoice.GROUP
+            if self.type == NotificationType.GROUP.value
             else usernames[0],
         }
         url = settings.EVENT_URL
@@ -90,7 +90,18 @@ class Notification(models.Model):
             "type": self.type,
         }
 
-        response = requests.post(url, json=payload)
+        # response = requests.post(url, json=payload)
+
+        # Заглушка вместо реального запроса
+        logger.debug(f"Payload: {json.dumps(payload)}")
+
+        class FakeResponse:
+            def __init__(self, status_code: int):
+                self.status_code = status_code
+
+        # Имитируем успешный ответ
+        response = FakeResponse(status_code=200)
+
         return response.status_code
 
 
@@ -102,8 +113,8 @@ class NotificationToUser(models.Model):
     status = models.CharField(
         verbose_name="Статус",
         max_length=10,
-        choices=StatusChoice.choices,
-        default=StatusChoice.PENDING,
+        choices=StatusType.enum_to_choices(),
+        default=StatusType.PENDING.value,
     )
     last_update = models.DateTimeField(
         verbose_name="Последнее обновление", auto_now=True
