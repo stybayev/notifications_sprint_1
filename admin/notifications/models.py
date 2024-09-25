@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Annotated, List
 
-import requests
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -45,6 +45,16 @@ class Notification(models.Model):
     )
     groups = models.ManyToManyField(
         Group, related_name="notifications", through="NotificationToGroup"
+    )
+
+    scheduled_time = models.DateTimeField(
+        "Время отправки", null=True, blank=True
+    )
+    is_recurring = models.BooleanField("Повторяющееся", default=False)
+    recurrence_rule = models.CharField(
+        "Правило повторения (Crontab)", max_length=100, null=True, blank=True,
+        help_text="Введите crontab строку, например, '0 0 * * *' для ежедневной отправки в полночь.",
+        default='* * * * *'
     )
 
     class Meta:
@@ -103,6 +113,42 @@ class Notification(models.Model):
         response = FakeResponse(status_code=200)
 
         return response.status_code
+
+    def schedule(self):
+        from notifications.tasks import send_notification_task
+        import json
+
+        if self.scheduled_time:
+            if self.is_recurring and self.recurrence_rule:
+                crontab_parts = self.recurrence_rule.strip().split()
+                if len(crontab_parts) == 5:
+                    schedule, created = CrontabSchedule.objects.get_or_create(
+                        minute=crontab_parts[0],
+                        hour=crontab_parts[1],
+                        day_of_month=crontab_parts[2],
+                        month_of_year=crontab_parts[3],
+                        day_of_week=crontab_parts[4],
+                        timezone='UTC',
+                    )
+                    PeriodicTask.objects.update_or_create(
+                        name=f'Notification_{self.id}',
+                        defaults={
+                            'crontab': schedule,
+                            'task': 'notifications.tasks.send_notification_task',
+                            'args': json.dumps([self.id]),
+                        }
+                    )
+                else:
+                    logger.error(f"Некорректная crontab строка: {self.recurrence_rule}")
+            else:
+                # Отложенная одноразовая задача
+                send_notification_task.apply_async(
+                    args=[self.id],
+                    eta=self.scheduled_time
+                )
+        else:
+            # Мгновенная отправка
+            send_notification_task.delay(self.id)
 
 
 class NotificationToUser(models.Model):
