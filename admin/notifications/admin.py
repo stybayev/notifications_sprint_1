@@ -34,7 +34,6 @@ class NotificationAdmin(admin.ModelAdmin):
     actions = ("send_notification",)
     list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule')
 
-    # Добавляем новые поля в форму администратора
     fieldsets = (
         (None, {
             'fields': ('name', 'template', 'type', 'scheduled_time', 'is_recurring', 'recurrence_rule')

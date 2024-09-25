@@ -120,7 +120,6 @@ class Notification(models.Model):
 
         if self.scheduled_time:
             if self.is_recurring and self.recurrence_rule:
-                # Парсим crontab строку
                 crontab_parts = self.recurrence_rule.strip().split()
                 if len(crontab_parts) == 5:
                     schedule, created = CrontabSchedule.objects.get_or_create(
@@ -129,7 +128,7 @@ class Notification(models.Model):
                         day_of_month=crontab_parts[2],
                         month_of_year=crontab_parts[3],
                         day_of_week=crontab_parts[4],
-                        timezone='UTC',  # Задайте ваш часовой пояс
+                        timezone='UTC',
                     )
                     PeriodicTask.objects.update_or_create(
                         name=f'Notification_{self.id}',
