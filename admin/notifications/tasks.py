@@ -16,3 +16,5 @@ def send_notification_task(notification_id):
             logger.error(f"Не удалось отправить уведомление '{notification}'. Код состояния: {status_code}")
     except Notification.DoesNotExist:
         logger.error(f"Уведомление с id {notification_id} не существует.")
+    except Exception as e:
+        logger.exception(f"Ошибка при отправке уведомления с id {notification_id}: {e}")

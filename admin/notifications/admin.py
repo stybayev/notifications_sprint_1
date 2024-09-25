@@ -33,6 +33,18 @@ class NotificationAdmin(admin.ModelAdmin):
     inlines = (NotificationAdminUsersInline, NotificationAdminGroupsInline)
     raw_id_fields = ("template",)
     actions = ("send_notification",)
+    list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule')
+
+    # Добавляем новые поля в форму администратора
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'template', 'type', 'scheduled_time', 'is_recurring', 'recurrence_rule')
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        obj.schedule()
 
     @admin.action(description="Отправить уведомление пользователям")
     def send_notification(self, request, queryset):
@@ -43,10 +55,16 @@ class NotificationAdmin(admin.ModelAdmin):
             capture_message(
                 f"Постановка в очередь отправки уведомления {notification} для пользователей {notification.recipients}",
                 level="info")
-            send_notification_task.delay(notification.id)
-            self.message_user(
-                request, f"{notification} поставлено в очередь на отправку", messages.SUCCESS
-            )
+            if notification.scheduled_time:
+                notification.schedule()
+                self.message_user(
+                    request, f"{notification} поставлено в расписание на отправку", messages.SUCCESS
+                )
+            else:
+                send_notification_task.delay(notification.id)
+                self.message_user(
+                    request, f"{notification} поставлено в очередь на отправку", messages.SUCCESS
+                )
 
 
 @admin.register(TemplateModel)
