@@ -1,5 +1,4 @@
 import logging
-from http import HTTPStatus
 import os
 from django.contrib import admin, messages
 from notifications.models import Notification
