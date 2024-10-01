@@ -120,6 +120,7 @@ class Notification(models.Model):
             "event_type": self.name,
             "context": context,
             "type": self.type,
+            "delivery_method": self.delivery_method
         }
 
         # response = requests.post(url, json=payload)
