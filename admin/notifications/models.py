@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
-from notifications.enums import StatusType, NotificationType
+from notifications.enums import (StatusType, NotificationType, DeliveryMethod)
 
 User = get_user_model()
 
@@ -33,16 +33,27 @@ class Template(models.Model):
 
 class Notification(models.Model):
     template = models.ForeignKey("Template", on_delete=models.CASCADE)
+
     name = models.CharField("Название", max_length=50)
+
     type = models.CharField(
         "Тип рассылки",
         max_length=50,
         choices=NotificationType.enum_to_choices(),
         default=NotificationType.GROUP.value,
     )
+
+    delivery_method = models.CharField(
+        "Способ доставки",
+        max_length=10,
+        choices=DeliveryMethod.enum_to_choices(),
+        default=DeliveryMethod.EMAIL.value,
+    )
+
     users = models.ManyToManyField(
         User, related_name="notifications", through="NotificationToUser"
     )
+
     groups = models.ManyToManyField(
         Group, related_name="notifications", through="NotificationToGroup"
     )
@@ -50,7 +61,9 @@ class Notification(models.Model):
     scheduled_time = models.DateTimeField(
         "Время отправки", null=True, blank=True
     )
+
     is_recurring = models.BooleanField("Повторяющееся", default=False)
+
     recurrence_rule = models.CharField(
         "Правило повторения (Crontab)", max_length=100, null=True, blank=True,
         help_text="Введите crontab строку, например, '0 0 * * *' для ежедневной отправки в полночь.",
@@ -66,6 +79,9 @@ class Notification(models.Model):
 
     @property
     def recipients(self) -> User | List[User]:
+        """
+        Возвращает список получателей
+        """
         groups = self.groups.all()
         groups_users = []
         for group in groups:
@@ -74,9 +90,15 @@ class Notification(models.Model):
 
     @property
     def recipients_ids(self) -> List[Annotated[str, "User's ids"]]:
+        """
+        Возвращает список идентификаторов получателей
+        """
         return [str(user.id) for user in self.recipients]
 
     def send(self) -> Annotated[int, "Status code"]:
+        """
+        Метод для отправки уведомления
+        """
         ids = (
             self.recipients_ids
             if self.type == NotificationType.GROUP.value
@@ -98,6 +120,7 @@ class Notification(models.Model):
             "event_type": self.name,
             "context": context,
             "type": self.type,
+            "delivery_method": self.delivery_method
         }
 
         # response = requests.post(url, json=payload)
@@ -115,6 +138,9 @@ class Notification(models.Model):
         return response.status_code
 
     def schedule(self):
+        """
+        Метод для расписания уведомления
+        """
         from notifications.tasks import send_notification_task
         import json
 
