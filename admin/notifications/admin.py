@@ -5,7 +5,6 @@ from notifications.models import Notification
 from notifications.models import Template as TemplateModel
 from notifications.tasks import send_notification_task
 import sentry_sdk
-from sentry_sdk import capture_message
 
 logger = logging.getLogger(__name__)
 sentry_sdk.init(dsn=str(os.environ.get('SENTRY_SDK_DSN')), )
@@ -35,7 +34,7 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule')
 
     fieldsets = (
-        (None, {
+        ('asdfasd', {
             'fields': ('name', 'template', 'type', 'scheduled_time', 'is_recurring', 'recurrence_rule')
         }),
     )
@@ -47,12 +46,6 @@ class NotificationAdmin(admin.ModelAdmin):
     @admin.action(description="Отправить уведомление пользователям")
     def send_notification(self, request, queryset):
         for notification in queryset:
-            logger.info(
-                f"Постановка в очередь отправки уведомления {notification} для пользователей {notification.recipients}"
-            )
-            capture_message(
-                f"Постановка в очередь отправки уведомления {notification} для пользователей {notification.recipients}",
-                level="info")
             if notification.scheduled_time:
                 notification.schedule()
                 self.message_user(

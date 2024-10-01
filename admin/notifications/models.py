@@ -66,6 +66,9 @@ class Notification(models.Model):
 
     @property
     def recipients(self) -> User | List[User]:
+        """
+        Возвращает список получателей
+        """
         groups = self.groups.all()
         groups_users = []
         for group in groups:
@@ -74,9 +77,15 @@ class Notification(models.Model):
 
     @property
     def recipients_ids(self) -> List[Annotated[str, "User's ids"]]:
+        """
+        Возвращает список идентификаторов получателей
+        """
         return [str(user.id) for user in self.recipients]
 
     def send(self) -> Annotated[int, "Status code"]:
+        """
+        Метод для отправки уведомления
+        """
         ids = (
             self.recipients_ids
             if self.type == NotificationType.GROUP.value
@@ -115,6 +124,9 @@ class Notification(models.Model):
         return response.status_code
 
     def schedule(self):
+        """
+        Метод для расписания уведомления
+        """
         from notifications.tasks import send_notification_task
         import json
 
