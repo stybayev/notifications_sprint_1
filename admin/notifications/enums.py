@@ -24,3 +24,9 @@ class StatusType(BaseEnum):
 class NotificationType(BaseEnum):
     PERSONAL: str = "personal"
     GROUP: str = "group"
+
+
+class DeliveryMethod(BaseEnum):
+    EMAIL: str = 'email'
+    SMS: str = 'sms'
+    PUSH: str = 'push'

@@ -31,11 +31,12 @@ class NotificationAdmin(admin.ModelAdmin):
     inlines = (NotificationAdminUsersInline, NotificationAdminGroupsInline)
     raw_id_fields = ("template",)
     actions = ("send_notification",)
-    list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule')
+    list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule', 'delivery_method')
 
     fieldsets = (
-        ('asdfasd', {
-            'fields': ('name', 'template', 'type', 'scheduled_time', 'is_recurring', 'recurrence_rule')
+        (None, {
+            'fields': (
+            'name', 'template', 'type', 'delivery_method', 'scheduled_time', 'is_recurring', 'recurrence_rule')
         }),
     )
 
