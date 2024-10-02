@@ -19,7 +19,7 @@ class Notification(Base):
     name = Column(String(50), nullable="False")
     type = Column(String(50), nullable="False")
     template_id = Column(String(50), ForeignKey("notifications_template.slug"), nullable=False)
-    is_recurring = Column(Boolean, nullable=False)
+    is_recurring = Column(Boolean, nullable=False, default=False)
     recurrence_rule = Column(String(100))
     scheduled_time = Column(DateTime(timezone=True))
 

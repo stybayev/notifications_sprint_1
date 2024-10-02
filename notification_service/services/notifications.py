@@ -68,25 +68,23 @@ class NotificationService(NotificationServiceABC):
             template_id=event.event_name,
             name=event.event_type,
             type=event.type.value,
-            is_recurring=event.is_recurring,
-            recurrence_rule=event.recurrence_rule,
-            scheduled_time=event.scheduled_time
         )
-        try:
-            notification = await self.notification_repository.post(obj_in=notification_create_dto)
-        except sqlalchemy.exc.IntegrityError as err:
-            logging.error("The event could not be accepted")
-            logging.error(err)
-            return
-        for receiver_id in event.receiver:
-            notification_to_user_dto = NotificationToUserDto(
-                user_id=receiver_id,
-                notification_id=notification.id,
-                retry_count=0,
-                status=Status("pending"),
-            )
-            await self.notification_to_user_repository.post(obj_in=notification_to_user_dto)
-        logging.info('Success added to database')
+        if event.service != 'admin_notifications':
+            try:
+                notification = await self.notification_repository.post(obj_in=notification_create_dto)
+            except sqlalchemy.exc.IntegrityError as err:
+                logging.error("The event could not be accepted")
+                logging.error(err)
+                return
+            for receiver_id in event.receiver:
+                notification_to_user_dto = NotificationToUserDto(
+                    user_id=receiver_id,
+                    notification_id=notification.id,
+                    retry_count=0,
+                    status=Status("pending"),
+                )
+                await self.notification_to_user_repository.post(obj_in=notification_to_user_dto)
+            logging.info('Success added to database')
         await self.send_to_queue(event)
         logging.info('Success added to queue')
         return notification_create_dto
