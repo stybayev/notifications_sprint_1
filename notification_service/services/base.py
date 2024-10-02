@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from fastapi.encoders import jsonable_encoder
-import logging
-from models.base_model import BaseModel
-from datetime import datetime
 from typing import TypeVar, Type, Generic, Any
+
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from notification_service.models.base_model import BaseModel
 
 ModelType = TypeVar("ModelType", bound=BaseModel)
 CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
-
 
 
 class Repository(ABC):
@@ -20,7 +19,6 @@ class Repository(ABC):
     @abstractmethod
     async def post(self, *args, **kwargs):
         ...
-
 
 
 class RepositoryPostgres(Repository, Generic[ModelType, CreateSchemaType]):
@@ -37,7 +35,6 @@ class RepositoryPostgres(Repository, Generic[ModelType, CreateSchemaType]):
         results = await self.db.execute(statement=statement)
         return results.scalar_one_or_none()
 
-
     async def post(
             self,
             obj_in: CreateSchemaType
@@ -47,4 +44,3 @@ class RepositoryPostgres(Repository, Generic[ModelType, CreateSchemaType]):
         self.db.add(db_obj)
         await self.db.commit()
         return db_obj
-

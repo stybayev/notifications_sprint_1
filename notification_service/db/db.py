@@ -1,13 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from core.config import settings
+from notification_service.core.config import settings
 
 Base = declarative_base()
 
 engine = create_async_engine(settings.db.url, echo=settings.log_sql_queries, future=True)
 async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
-
 
 
 async def get_db_session() -> AsyncSession:

@@ -1,24 +1,27 @@
+import json
+import logging
+import os
 from abc import ABC, abstractmethod
+from uuid import UUID
 
 import sqlalchemy.exc
-import os
-import json
-from models.db_models import Notification, NotificationToUser, Templates
-from schemas.notification import NotificationCreateDto, NotificationToUserDto
-from uuid import UUID
-from models.event import Event
-from services.base import RepositoryPostgres
-from fastapi.encoders import jsonable_encoder
-import logging
-from models.db_models import Status
 from aio_pika import connect, Message
+from fastapi.encoders import jsonable_encoder
+
+from notification_service.models.db_models import Notification, NotificationToUser, Templates
+from notification_service.models.db_models import Status
+from notification_service.models.event import Event
+from notification_service.schemas.notification import NotificationCreateDto, NotificationToUserDto
+from notification_service.services.base import RepositoryPostgres
 
 
 class NotificationRepository(RepositoryPostgres[Notification, NotificationCreateDto]):
     ...
 
+
 class NotificationToUserRepository(RepositoryPostgres[NotificationToUser, NotificationToUserDto]):
     ...
+
 
 class TemplateRepository(RepositoryPostgres[Templates, None]):
     ...
@@ -30,7 +33,7 @@ class NotificationServiceABC(ABC):
         ...
 
     @abstractmethod
-    async def get_event_history(self, user_id: UUID) -> Notification: # // TODO сделать пагинационную модель
+    async def get_event_history(self, user_id: UUID) -> Notification:  # // TODO сделать пагинационную модель
         ...
 
 

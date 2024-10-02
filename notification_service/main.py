@@ -5,11 +5,10 @@ import os
 
 from fastapi.responses import ORJSONResponse
 from fastapi import FastAPI
-from core.logger import LOGGING
-from api.v1.notifications import router as router_notification
-
-from core.config import settings
-from dependencies.main import setup_dependencies
+from notification_service.core.config import settings
+from notification_service.core.logger import LOGGING
+from notification_service.api.v1.notifications import router as router_notification
+from notification_service.dependencies.main import setup_dependencies
 
 app = FastAPI(
     title=settings.project_name,

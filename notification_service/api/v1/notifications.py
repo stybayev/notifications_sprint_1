@@ -1,14 +1,16 @@
 from http import HTTPStatus
+
 from fastapi import APIRouter, Depends, HTTPException
-from models.event import Event
-from models.notification import NotificationHistory
-from services.notifications import NotificationServiceABC
-from schemas.notification import NotificationCreateDto
+
+from notification_service.models.event import Event
+from notification_service.models.notification import NotificationHistory
+from notification_service.schemas.notification import NotificationCreateDto
+from notification_service.services.notifications import NotificationServiceABC
 
 router = APIRouter()
 
 
-@router.post("/{post_event}", response_model=NotificationCreateDto)
+@router.post("/", response_model=NotificationCreateDto)
 async def post_event(
         *,
         service: NotificationServiceABC = Depends(),
@@ -22,7 +24,8 @@ async def post_event(
         )
     return notification
 
-@router.get("/{get_event_history}", response_model=NotificationHistory)
+
+@router.get("/get_event_history", response_model=NotificationHistory)
 async def get_notification_history(
         *,
         service: None,
@@ -30,5 +33,3 @@ async def get_notification_history(
     # TODO: здесь реализуем получение истории уведомлений.
     #  Надо решить какую бд будем использовать и реализовать репозиторий
     pass
-
-

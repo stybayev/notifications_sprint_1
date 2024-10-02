@@ -1,10 +1,10 @@
-import uuid
 import enum
+import uuid
 
-from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, String, Text, Boolean, BigInteger, TIMESTAMP
+from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, String, Text, Boolean, BigInteger
 from sqlalchemy.sql import func
 
-from db.db import Base
+from notification_service.db.db import Base
 
 
 class Status(enum.Enum):
@@ -22,6 +22,7 @@ class Notification(Base):
     is_recurring = Column(Boolean, nullable=False, default=False)
     recurrence_rule = Column(String(100))
     scheduled_time = Column(DateTime(timezone=True))
+
 
 class NotificationToUser(Base):
     __tablename__ = 'notifications_notificationtouser'

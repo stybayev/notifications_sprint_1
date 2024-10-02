@@ -1,13 +1,15 @@
-from pydantic import BaseModel
 from uuid import UUID
-from models.db_models import Status
-from datetime import datetime
+
+from pydantic import BaseModel
+
+from notification_service.models.db_models import Status
 
 
 class NotificationCreateDto(BaseModel):
     template_id: str
     name: str
     type: str
+
 
 class NotificationToUserDto(BaseModel):
     user_id: UUID

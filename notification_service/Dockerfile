@@ -7,4 +7,5 @@ RUN apt-get update -y
 RUN apt-get install gcc -y
 RUN pip install -r requirements.txt
 COPY . /notification_service
-CMD python main.py
+COPY main.py /
+CMD python /main.py

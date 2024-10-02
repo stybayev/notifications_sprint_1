@@ -3,7 +3,7 @@ from typing import Any, Callable
 
 from fastapi import FastAPI
 
-from dependencies.registrator import dependencies_container
+from notification_service.dependencies.registrator import dependencies_container
 
 
 def setup_dependencies(app: FastAPI, mapper: dict[Any, Callable] | None = None):

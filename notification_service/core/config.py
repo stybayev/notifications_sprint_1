@@ -1,7 +1,9 @@
 import os
 from logging import config as logging_config
+
 from pydantic import BaseSettings, Field
-from core.logger import LOGGING
+
+from notification_service.core.logger import LOGGING
 
 
 class DataBaseSettings(BaseSettings):
@@ -25,6 +27,7 @@ class Settings(BaseSettings):
     uvicorn_port: int = Field(default=8000, env="UVICORN_PORT")
     db = DataBaseSettings()
     log_sql_queries: bool = False
+
     class Config:
         env_file = ".env"
 
