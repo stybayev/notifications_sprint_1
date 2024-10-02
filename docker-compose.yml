@@ -11,8 +11,6 @@ services:
       - ./admin:/code
       - static_volume:/code/static
       - media_volume:/code/media
-    ports:
-      - "${ADMIN_PORT}:8080"
     command: /start.sh
     depends_on:
       db:
