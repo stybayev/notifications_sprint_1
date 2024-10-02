@@ -61,6 +61,12 @@ services:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq  # Persist data
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis:alpine
@@ -71,6 +77,12 @@ services:
       - ${REDIS_PORT}:6379
     volumes:
       - redis_data:/var/lib/redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   celery:
     build: ./admin
@@ -107,6 +119,38 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
+
+  email:
+    build: ./worker
+    container_name: fastapi_app
+    command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  worker:
+    build: .
+    container_name: email_worker
+    command: [ "python", "worker/worker.py" ]
+    volumes:
+      - .:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
 
 volumes:
   postgres_data:
