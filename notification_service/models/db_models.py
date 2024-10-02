@@ -1,7 +1,7 @@
 import uuid
 import enum
 
-from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, Enum, String, Text, Boolean, BigInteger
+from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, String, Text, Boolean, BigInteger, TIMESTAMP
 from sqlalchemy.sql import func
 
 from db.db import Base
@@ -19,13 +19,15 @@ class Notification(Base):
     name = Column(String(50), nullable="False")
     type = Column(String(50), nullable="False")
     template_id = Column(String(50), ForeignKey("notifications_template.slug"), nullable=False)
+    is_recurring = Column(Boolean, nullable=False)
+    recurrence_rule = Column(String(100))
+    scheduled_time = Column(DateTime(timezone=True))
 
 class NotificationToUser(Base):
     __tablename__ = 'notifications_notificationtouser'
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     retry_count = Column(Integer, nullable="False")
-    # status = Column(Enum(Status), nullable="False")
     status = Column(String(50), nullable="False")
     last_update = Column(
         DateTime(timezone=True),

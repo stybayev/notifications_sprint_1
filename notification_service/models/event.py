@@ -3,13 +3,13 @@ import enum
 
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class EventContext(BaseModel):
     title: str
     text: str
     username: str
-    type: str
 
 class EventType(enum.Enum):
     personal = "personal"
@@ -22,3 +22,6 @@ class Event(BaseModel):
     context: EventContext
     type: EventType
     service: str
+    is_recurring: bool
+    recurrence_rule: str
+    scheduled_time: datetime

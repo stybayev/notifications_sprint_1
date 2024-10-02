@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
-import logging
 from models.event import Event
 from models.notification import NotificationHistory
 from services.notifications import NotificationServiceABC
@@ -21,8 +20,6 @@ async def post_event(
             status_code=HTTPStatus.BAD_REQUEST,
             detail='The request could not be added to the queue'
         )
-    print(notification)
-    logging.info(notification)
     return notification
 
 @router.get("/{get_event_history}", response_model=NotificationHistory)

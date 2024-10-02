@@ -8,7 +8,7 @@ create_user:
 	docker exec -it notifications_sprint_1_django_admin_1 python manage.py createsuperuser
 
 psql-conn:
-	psql -h 127.0.0.1 -U postgres -d postgres_notif
+	psql -h 127.0.0.1 -U postgres -d postgres
 
 clear:
 	docker system prune
