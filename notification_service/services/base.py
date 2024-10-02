@@ -42,13 +42,7 @@ class RepositoryPostgres(Repository, Generic[ModelType, CreateSchemaType]):
             self,
             obj_in: CreateSchemaType
     ):
-        datetime_fields = []
-        for data in obj_in:
-            if isinstance(data[1], datetime):
-                datetime_fields.append(data)
         obj_in_data = jsonable_encoder(obj_in)
-        for date in datetime_fields:
-            obj_in_data[date[0]] = date[1]
         db_obj = self._model(**obj_in_data)
         self.db.add(db_obj)
         await self.db.commit()

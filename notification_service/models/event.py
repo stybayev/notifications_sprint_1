@@ -15,6 +15,11 @@ class EventType(enum.Enum):
     personal = "personal"
     group = "group"
 
+class DeliveryMethod(enum.Enum):
+    email = "email"
+    sms = "sms"
+    push = "push"
+
 class Event(BaseModel):
     receiver: List[UUID]
     event_name: str # slug
@@ -22,6 +27,4 @@ class Event(BaseModel):
     context: EventContext
     type: EventType
     service: str
-    is_recurring: bool
-    recurrence_rule: str
-    scheduled_time: datetime
+    delivery_method: DeliveryMethod
