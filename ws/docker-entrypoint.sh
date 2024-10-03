@@ -6,8 +6,8 @@ set -e
 echo "FASTAPI_ENV: $FASTAPI_ENV"
 if [ "$FASTAPI_ENV" = "production" ]; then
     echo "Starting the production server"
-    exec gunicorn --worker-class uvicorn.workers.UvicornWorker --config app/core/gunicorn_conf.py app.main:app
+    exec gunicorn --worker-class uvicorn.workers.UvicornWorker --config ws/core/gunicorn_conf.py ws.main:app
 else
     echo "Starting the development server"
-    exec uvicorn --reload --host=${AUTH_API_UVICORN_HOST:-0.0.0.0} --port=${AUTH_API_UVICORN_PORT:-8082} app.main:app
+    exec uvicorn --reload --host=${WS_UVICORN_HOST:-0.0.0.0} --port=${WS_UVICORN_PORT:-8084} ws.main:app
 fi
