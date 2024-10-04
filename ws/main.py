@@ -37,7 +37,7 @@ async def welcome(websocket: WebSocket) -> str:
     return name
 
 
-@app.websocket("/ws")  # ws://localhost:8084/ws
+@app.websocket("/ws")  # ws://localhost/ws
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
