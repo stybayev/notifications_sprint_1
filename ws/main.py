@@ -10,7 +10,6 @@ app = FastAPI(
     swagger_ui_oauth2_redirect_url="/api/v1/ws/users/login",
 )
 
-
 # @app.on_event("startup")
 # async def startup():
 #     # Подключение к RabbitMQ
@@ -38,7 +37,7 @@ async def welcome(websocket: WebSocket) -> str:
     return name
 
 
-@app.websocket("/ws")
+@app.websocket("/ws")  # ws://localhost:8084/ws
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
