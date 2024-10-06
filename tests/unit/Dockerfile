@@ -17,5 +17,5 @@ COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Установка entrypoint.sh как точки входа
-ENTRYPOINT ["entrypoint.sh"]
-CMD ["pytest", "tests/unit"]
+# ENTRYPOINT ["entrypoint.sh"]
+# CMD ["pytest", "tests/unit"]

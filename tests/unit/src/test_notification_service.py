@@ -1,16 +1,22 @@
 import pytest
 from httpx import AsyncClient
+from notification_service.models.db_models import User
 
 @pytest.mark.asyncio
 async def test_post_event(
         notification_client: AsyncClient,
         mock_db_session,
+        mock_rabbit,
         notification_service_override_dependencies
 ):
+    user = User(id='8f80ef88-1865-4ea5-bb39-f664423506f2', is_receiving="False", email="user@user.ru")
+    mock_db_session.add(user)
+    user = User(id='d99b0789-a833-432b-94ef-4f1c0eea731a', is_receiving="False", email="user2@user.ru")
+    mock_db_session.add(user)
     payload = {
         "receiver": [
-            '8f80ef88-1865-4ea5-bb39-f664423506f2',
-            'd99b0789-a833-432b-94ef-4f1c0eea731a'
+            "8f80ef88-1865-4ea5-bb39-f664423506f2",
+            "d99b0789-a833-432b-94ef-4f1c0eea731a"
         ],
         "event_name": "slug",
         "event_type": "welcome",
@@ -21,6 +27,7 @@ async def test_post_event(
             "username": ["John Smith", "Jenny Doe"]
         },
         "type": "GROUP",
+        "service": "auth",
         "delivery_method": "email"
     }
     response = await notification_client.post('/', json=payload)

@@ -15,6 +15,5 @@ async def fixture_notification_client(notification_service_override_dependencies
 @pytest_asyncio.fixture(name='notification_service_override_dependencies', scope='session')
 def fixture_notification_service_override_dependencies(mock_db_session):
     notification_app.dependency_overrides[get_db_session] = lambda: mock_db_session
-
     yield
     notification_app.dependency_overrides = {}

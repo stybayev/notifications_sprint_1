@@ -6,7 +6,7 @@ networks:
 
 services:
   test_runner_unit:
-    image: python:3.10-slim
+#    image: python:3.10-slim
     container_name: test_runner_unit
     build:
       context: .
