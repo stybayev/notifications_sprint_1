@@ -5,7 +5,6 @@ x-configs: &common_config
   env_file:
     - ./.env
 
-
 services:
   django_admin:
     <<: *common_config
