@@ -33,3 +33,10 @@ app = FastAPI(
 @app.websocket("/ws")  # ws://localhost/ws
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+
+    while True:
+        data = await websocket.receive_text()
+        if data == "ping":
+            await websocket.send_text("pong")
+        else:
+            await websocket.close()
