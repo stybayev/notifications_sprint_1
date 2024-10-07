@@ -1,6 +1,26 @@
 import os
 from pydantic.v1 import BaseSettings
 
+
+class RabbitMQSettings(BaseSettings):
+    """
+    Настройки RabbitMQ
+    """
+    default_user: str = ...
+    default_pass: str = ...
+    hostname: str = ...
+    port: int = ...
+    queue_ws: str = ...
+
+    @property
+    def rabbitmq_url(self) -> str:
+        return f"amqp://{self.default_user}:{self.default_pass}@{self.hostname}:{self.port}/"
+
+    class Config:
+        env_file = ".env"
+        env_prefix = "RABBITMQ_"
+
+
 class JWTSettings(BaseSettings):
     """
     Настройки JWT
@@ -28,6 +48,12 @@ class Settings(BaseSettings):
     # JWT
     jwt: JWTSettings = JWTSettings()
 
+    # RabbitMQ
+    rabbitmq: RabbitMQSettings = RabbitMQSettings()
+
     class Config:
         env_file = ".env"
         env_prefix = "WS_"
+
+
+settings = Settings()
