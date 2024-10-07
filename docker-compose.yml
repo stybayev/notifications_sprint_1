@@ -3,6 +3,7 @@ version: "3.9"
 x-configs: &common_config
   restart: always
 
+
 services:
   django_admin:
     <<: *common_config
@@ -17,6 +18,25 @@ services:
         condition: service_healthy
     env_file:
       - ./.env
+
+  notification_service:
+    container_name: notification_service
+    build: ./notification_service
+    <<: *common_config
+    expose:
+      - ${UVICORN_PORT}
+    ports:
+      - ${UVICORN_PORT}:${UVICORN_PORT}
+    env_file:
+      - ./.env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      django_admin:
+        condition: service_started
+#    command: tail -f /dev/null
 
   db:
     <<: *common_config
@@ -53,14 +73,20 @@ services:
     <<: *common_config
     image: rabbitmq:3.10.7-management
     ports:
-      - "15672:15672"  # Management Web UI
-      - "5672:5672"    # AMQP protocol
+      - ${RABBITMQ_WEB_PORT}:${RABBITMQ_WEB_PORT}  # Management Web UI
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}    # AMQP protocol
+    hostname: ${RABBITMQ_HOSTNAME}
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq  # Persist data
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   redis:
     image: redis:alpine
