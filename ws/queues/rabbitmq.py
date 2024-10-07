@@ -1,9 +1,6 @@
 from ws.core.config import settings
 import asyncio
 import aio_pika
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class RabbitMQConnection:
@@ -14,7 +11,9 @@ class RabbitMQConnection:
         self.consume_task: asyncio.Task = None
 
     async def connect(self) -> None:
-
+        """
+        Подключение к RabbitMQ
+        """
         self.connection = await aio_pika.connect_robust(settings.rabbitmq.rabbitmq_url)
 
         self.channel = await self.connection.channel()
@@ -24,6 +23,9 @@ class RabbitMQConnection:
         )
 
     async def close(self) -> None:
+        """
+        Отключение от RabbitMQ
+        """
         if self.consume_task:
             self.consume_task.cancel()
             await self.consume_task
