@@ -1,10 +1,6 @@
-# main.py
-
 from typing import Dict, Any
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import ORJSONResponse
-import os
-import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -59,32 +55,6 @@ app = FastAPI(
 )
 
 
-async def welcome(websocket: WebSocket) -> str:
-    await websocket.send_text('Представьтесь!')
-    name = await websocket.receive_text()
-    peoples[name.strip()] = websocket
-    return name
-
-
 @app.websocket("/ws")  # ws://localhost/ws
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    try:
-        name = await welcome(websocket)
-        while True:
-            message = (await websocket.receive_text()).strip()
-            if message == '?':
-                await websocket.send_text(', '.join(peoples.keys()))
-            else:
-                try:
-                    to, text = message.split(': ', 1)
-                    if to in peoples:
-                        await peoples[to].send_text(f'Сообщение от {name}: {text}')
-                    else:
-                        await websocket.send_text(f'Пользователь {to} не найден')
-                except ValueError:
-                    await websocket.send_text('Неверный формат сообщения. Используйте "<имя>: <сообщение>".')
-    except WebSocketDisconnect:
-        if name in peoples:
-            del peoples[name]
-        logger.info(f"Пользователь {name} отключился.")
