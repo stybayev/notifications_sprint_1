@@ -138,6 +138,26 @@ dev = ["cogapp", "pre-commit", "pytest", "wheel"]
 tests = ["pytest"]
 
 [[package]]
+name = "async-fastapi-jwt-auth"
+version = "0.6.6"
+description = "Async fork of FastAPI extension that provides JWT Auth support (secure, easy to use and lightweight)"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "async_fastapi_jwt_auth-0.6.6-py3-none-any.whl", hash = "sha256:fd050738ecf473e043bc30cfcf74d1389e84b7b16bad4b6515673e6ce947f871"},
+    {file = "async_fastapi_jwt_auth-0.6.6.tar.gz", hash = "sha256:1b88f2f6d1bfc060b66a3dd73c0b34556bdcf538c9ab5b45618b3dc5b3b5644f"},
+]
+
+[package.dependencies]
+fastapi = ">=0.109.0"
+httpx = ">=0.23.3"
+pydantic-settings = ">=2.2.1"
+PyJWT = ">=2.8.0"
+
+[package.extras]
+asymmetric = ["cryptography (>=42.0.5)"]
+
+[[package]]
 name = "async-timeout"
 version = "4.0.3"
 description = "Timeout context manager for asyncio programs"
@@ -2184,4 +2204,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f2ad8e9fccdc5e681a48521f06313e23747a974730aab6c6c325e60837412b66"
+content-hash = "4b6fe2fe3e98b23842da6fa149bff0673b5f7da3a996d2c00a774f51446f9990"
