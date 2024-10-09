@@ -1,7 +1,7 @@
 import json
 import logging
 import multiprocessing
-from pydantic.v1 import BaseSettings
+from pydantic import BaseSettings
 
 
 class GunicornSettings(BaseSettings):

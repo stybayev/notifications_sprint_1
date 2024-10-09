@@ -1,15 +1,19 @@
+import uuid
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import ORJSONResponse
 from contextlib import asynccontextmanager
 
+from ws.core.config import JWTSettings
 from ws.queues.rabbitmq import RabbitMQConnection
-from async_fastapi_jwt_auth import AuthJWT
+from fastapi_jwt_auth import AuthJWT
 
 rabbitmq = RabbitMQConnection()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    AuthJWT.load_config(lambda: JWTSettings())
     await rabbitmq.connect()
 
     yield
@@ -30,13 +34,18 @@ connected_users = {}
 async def websocket_endpoint(websocket: WebSocket,
                              Authorize: AuthJWT = Depends()):
     token = websocket.headers.get('Authorization')
-    if token is None:
+
+    if not token:
         await websocket.close(code=1008)
         return
 
+    if token.startswith('Bearer '):
+        token = token[7:]
+
     try:
-        await Authorize.jwt_required()
-        user_id = await Authorize.get_jwt_subject()
+        Authorize._token = token
+        Authorize.jwt_required()
+        user_id = Authorize.get_jwt_subject()
     except Exception as e:
         await websocket.close(code=1008)
         return
@@ -53,13 +62,3 @@ async def websocket_endpoint(websocket: WebSocket,
     except Exception as e:
         del connected_users[user_id]
         await websocket.close()
-# @app.websocket("/ws")  # ws://localhost/ws
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#
-#     while True:
-#         data = await websocket.receive_text()
-#         if data == "ping":
-#             await websocket.send_text("pong")
-#         else:
-#             await websocket.close()
