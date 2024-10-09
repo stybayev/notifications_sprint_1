@@ -1,5 +1,5 @@
-import uuid
-
+import asyncio
+import logging
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import ORJSONResponse
 from contextlib import asynccontextmanager
@@ -8,6 +8,8 @@ from ws.core.config import JWTSettings
 from ws.queues.rabbitmq import RabbitMQConnection
 from fastapi_jwt_auth import AuthJWT
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 rabbitmq = RabbitMQConnection()
 
 
@@ -15,9 +17,11 @@ rabbitmq = RabbitMQConnection()
 async def lifespan(app: FastAPI):
     AuthJWT.load_config(lambda: JWTSettings())
     await rabbitmq.connect()
+    consume_task = asyncio.create_task(rabbitmq.consume_messages(connected_users))
 
     yield
 
+    consume_task.cancel()
     await rabbitmq.close()
 
 
@@ -47,6 +51,7 @@ async def websocket_endpoint(websocket: WebSocket,
         Authorize.jwt_required()
         user_id = Authorize.get_jwt_subject()
     except Exception as e:
+        logger.info(f'Error: {e}')
         await websocket.close(code=1008)
         return
 
