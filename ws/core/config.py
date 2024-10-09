@@ -1,4 +1,3 @@
-
 from pydantic import BaseSettings
 
 
@@ -25,15 +24,15 @@ class JWTSettings(BaseSettings):
     """
     Настройки JWT
     """
-    authjwt_secret_key: str = 'practicum'
-    authjwt_algorithm: str = 'HS256'
-    authjwt_access_token_expires: int = 30
-    authjwt_refresh_token_expires: int = 141
+    authjwt_secret_key: str = ...
+    authjwt_algorithm: str = ...
+    authjwt_access_token_expires: int = ...
+    authjwt_refresh_token_expires: int = ...
     authjwt_user_claims: bool = True
 
-    # class Config:
-    #     env_file = ".env"
-    #     env_prefix = "JWT_"
+    class Config:
+        env_file = ".env"
+        env_prefix = "JWT_"
 
 
 class Settings(BaseSettings):
