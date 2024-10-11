@@ -9,7 +9,7 @@ from aio_pika import connect, Message
 from fastapi.encoders import jsonable_encoder
 
 from notification_service.models.db_models import Notification, NotificationToUser, Templates
-from notification_service.models.db_models import Status
+from notification_service.schemas.notification import Status
 from notification_service.models.event import Event
 from notification_service.schemas.notification import NotificationCreateDto, NotificationToUserDto
 from notification_service.services.base import RepositoryPostgres
@@ -71,6 +71,7 @@ class NotificationService(NotificationServiceABC):
             template_id=event.event_name,
             name=event.event_type,
             type=event.type.value,
+            delivery_method=event.delivery_method.value
         )
         if event.service != 'admin_notifications':
             try:
