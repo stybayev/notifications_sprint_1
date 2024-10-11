@@ -3,9 +3,15 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /notification_service
 COPY requirements.txt /notification_service
 RUN /usr/local/bin/python -m pip install --upgrade pip
+
 RUN apt-get update -y
 RUN apt-get install gcc -y
+RUN apt-get install postgresql-client -y
 RUN pip install -r requirements.txt
 COPY . /notification_service
+RUN chmod +x /notification_service/scripts/init_pg.sh
+ENTRYPOINT ["/notification_service/scripts/init_pg.sh"]
 COPY main.py /
 CMD python /main.py
+
+
