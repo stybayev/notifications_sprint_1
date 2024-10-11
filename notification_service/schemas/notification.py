@@ -1,14 +1,25 @@
 from uuid import UUID
 
 from pydantic import BaseModel
+import enum
 
-from notification_service.models.db_models import Status
 
+class Status(enum.Enum):
+    sent = "sent"
+    pending = "pending"
+    failed = "failed"
+
+
+class DeliveryMethod(enum.Enum):
+    email = "email"
+    sms = "sms"
+    push = "push"
 
 class NotificationCreateDto(BaseModel):
     template_id: str
     name: str
     type: str
+    delivery_method: DeliveryMethod
 
 
 class NotificationToUserDto(BaseModel):
