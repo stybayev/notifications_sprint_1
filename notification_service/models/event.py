@@ -28,5 +28,5 @@ class Event(BaseModel):
     event_type: str  # название
     context: EventContext
     type: EventType
-    service: str
+    service: str = "admin_notifications"
     delivery_method: DeliveryMethod

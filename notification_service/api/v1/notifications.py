@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -16,6 +17,7 @@ async def post_event(
         service: NotificationServiceABC = Depends(),
         event: Event
 ) -> NotificationCreateDto or None:
+    print(f"{event=}", file=sys.stderr)
     notification = await service.post_event(event)
     if not notification:
         raise HTTPException(

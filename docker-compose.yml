@@ -144,11 +144,11 @@ services:
   email:
     build: ./worker
     container_name: fastapi_app
-    command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
+    command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8001" ]
     volumes:
       - .:/worker
     ports:
-      - "8000:8000"
+      - "8001:8001"
     depends_on:
       rabbitmq:
         condition: service_healthy
