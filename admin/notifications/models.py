@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 from notifications.enums import (StatusType, NotificationType, DeliveryMethod)
+import requests
 
 User = get_user_model()
 
@@ -119,23 +120,12 @@ class Notification(models.Model):
             "event_name": self.template.slug,
             "event_type": self.name,
             "context": context,
-            "type": self.type,
+            "type": self.type.upper(),
             "delivery_method": self.delivery_method,
             "service": "admin_notifications",
         }
 
-        # response = requests.post(url, json=payload)
-
-        # Заглушка вместо реального запроса
-        logger.debug(f"Payload: {json.dumps(payload)}")
-
-        class FakeResponse:
-            def __init__(self, status_code: int):
-                self.status_code = status_code
-
-        # Имитируем успешный ответ
-        response = FakeResponse(status_code=200)
-
+        response = requests.post(url, json=payload)
         return response.status_code
 
     def schedule(self):
