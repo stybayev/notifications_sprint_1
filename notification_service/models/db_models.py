@@ -7,11 +7,6 @@ from sqlalchemy.sql import func
 from notification_service.db.db import Base
 
 
-class Status(enum.Enum):
-    sent = "sent"
-    pending = "pending"
-    failed = "failed"
-
 
 class Notification(Base):
     __tablename__ = 'notifications_notification'
@@ -22,6 +17,7 @@ class Notification(Base):
     is_recurring = Column(Boolean, nullable=False, default=False)
     recurrence_rule = Column(String(100))
     scheduled_time = Column(DateTime(timezone=True))
+    delivery_method = Column(String(50), nullable="False")
 
 
 class NotificationToUser(Base):
