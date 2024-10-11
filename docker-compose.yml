@@ -2,7 +2,8 @@ version: "3.9"
 
 x-configs: &common_config
   restart: always
-
+  env_file:
+    - ./.env
 
 services:
   django_admin:
@@ -16,8 +17,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - ./.env
+
+  websockets:
+    <<: *common_config
+    build:
+      context: ws
+      target: ${FASTAPI_ENV}
+    volumes:
+      - .:/app
+    ports:
+      - "8084:8084"
+    depends_on:
+      db:
+        condition: service_healthy
 
   notification_service:
     container_name: notification_service
@@ -36,7 +48,6 @@ services:
         condition: service_healthy
       django_admin:
         condition: service_started
-#    command: tail -f /dev/null
 
   db:
     <<: *common_config
@@ -47,8 +58,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    env_file:
-      - ./.env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
       interval: 10s
