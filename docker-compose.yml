@@ -152,7 +152,7 @@ services:
 
   email:
     build: ./worker
-    container_name: fastapi_app
+    container_name: email
     command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8001" ]
     volumes:
       - .:/worker
