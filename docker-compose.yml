@@ -150,38 +150,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  email:
-    build: ./worker
-    container_name: fastapi_app
-    command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8001" ]
-    volumes:
-      - .:/worker
-    ports:
-      - "8001:8001"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    env_file:
-      - .env
-
-  worker:
-    build: ./worker
-    container_name: email_worker
-    command: [ "python", "worker/worker.py" ]
-    volumes:
-      - .:/worker
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      - PYTHONPATH=/app:/core
-
 volumes:
   postgres_data:
   rabbitmq_data:
