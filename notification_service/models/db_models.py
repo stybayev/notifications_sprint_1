@@ -1,6 +1,8 @@
 import enum
 import uuid
+from typing import List
 
+from beanie import Document
 from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, String, Text, Boolean, BigInteger
 from sqlalchemy.sql import func
 
@@ -65,3 +67,11 @@ class User(Base):
     is_receiving = Column(Boolean)
     email = Column(String)
     timezone = Column(DateTime(timezone=True))
+
+
+class NotificationHistory(Document):
+    user_id: str
+    template_id: str
+    title: str
+    text: str
+    username: List[str]

@@ -1,7 +1,10 @@
+import logging
 from abc import ABC, abstractmethod
-from typing import TypeVar, Type, Generic, Any
+from typing import TypeVar, Type, Generic, Any, List
+from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
+from motor.motor_asyncio import AsyncIOMotorClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +22,23 @@ class Repository(ABC):
     @abstractmethod
     async def post(self, *args, **kwargs):
         ...
+
+
+class RepositoryMongo(Repository, Generic[ModelType, CreateSchemaType]):
+    def __init__(
+            self,
+            model: Type[ModelType],
+            client: AsyncIOMotorClient
+    ):
+        self._model = model
+        self.client = client
+
+    async def get(self, user_id: UUID) -> List[CreateSchemaType] or None:
+        logging.info(self._model)
+        return await self._model.find(self._model.user_id == str(user_id)).to_list()
+
+    async def post(self):
+        pass
 
 
 class RepositoryPostgres(Repository, Generic[ModelType, CreateSchemaType]):

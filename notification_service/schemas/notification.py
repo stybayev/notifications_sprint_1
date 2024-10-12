@@ -1,3 +1,4 @@
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -16,3 +17,11 @@ class NotificationToUserDto(BaseModel):
     notification_id: int
     retry_count: int
     status: Status
+
+
+class NotificationHistoryDto(BaseModel):
+    user_id: UUID
+    template_id: str
+    title: str
+    text: str
+    username: List[str]

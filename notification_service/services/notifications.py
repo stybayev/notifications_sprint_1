@@ -8,11 +8,12 @@ import sqlalchemy.exc
 from aio_pika import connect, Message
 from fastapi.encoders import jsonable_encoder
 
-from notification_service.models.db_models import Notification, NotificationToUser, Templates
-from notification_service.models.db_models import Status
+from notification_service.models.db_models import (Notification, NotificationToUser,
+                                                   Templates, Status, NotificationHistory)
 from notification_service.models.event import Event
-from notification_service.schemas.notification import NotificationCreateDto, NotificationToUserDto
-from notification_service.services.base import RepositoryPostgres
+from notification_service.schemas.notification import (NotificationCreateDto,
+                                                       NotificationToUserDto, NotificationHistoryDto)
+from notification_service.services.base import RepositoryPostgres, RepositoryMongo
 
 
 class NotificationRepository(RepositoryPostgres[Notification, NotificationCreateDto]):
@@ -27,13 +28,17 @@ class TemplateRepository(RepositoryPostgres[Templates, None]):
     ...
 
 
+class HistoryRepository(RepositoryMongo[NotificationHistory, NotificationHistoryDto]):
+    ...
+
+
 class NotificationServiceABC(ABC):
     @abstractmethod
     async def post_event(self, event: Event) -> NotificationCreateDto:
         ...
 
     @abstractmethod
-    async def get_event_history(self, user_id: UUID) -> Notification:  # // TODO сделать пагинационную модель
+    async def get_event_history(self, user_id: UUID) -> Notification:
         ...
 
 
@@ -42,11 +47,13 @@ class NotificationService(NotificationServiceABC):
             self,
             notification_repository: NotificationRepository,
             notification_to_user_repository: NotificationToUserRepository,
-            template_repository: TemplateRepository
+            template_repository: TemplateRepository,
+            history_repository: HistoryRepository
     ):
         self.notification_repository = notification_repository
         self.notification_to_user_repository = notification_to_user_repository
         self.template_repository = template_repository
+        self.history_repository = history_repository
 
     @staticmethod
     async def send_to_queue(event: Event) -> None:
@@ -92,5 +99,6 @@ class NotificationService(NotificationServiceABC):
         logging.info('Success added to queue')
         return notification_create_dto
 
-    async def get_event_history(self, user_id: UUID):
-        pass
+    async def get_event_history(self, user_id: UUID) -> NotificationHistoryDto or None:
+        history = await self.history_repository.get(user_id)
+        return history
