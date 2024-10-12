@@ -180,7 +180,7 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONPATH=/app
+      - PYTHONPATH=/app:/core
 
 volumes:
   postgres_data:
