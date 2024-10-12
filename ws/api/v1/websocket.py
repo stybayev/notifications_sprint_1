@@ -32,7 +32,7 @@ async def websocket_endpoint(websocket: WebSocket,
         Authorize._token = token
         Authorize.jwt_required()
         user_id = Authorize.get_jwt_subject()
-    except Exception as e:
+    except Exception:
         await websocket.close(code=1008)
         return
 
@@ -46,7 +46,7 @@ async def websocket_endpoint(websocket: WebSocket,
             await handle_client_message(user_id, data, manager)
     except WebSocketDisconnect:
         await manager.disconnect(user_id)
-    except Exception as e:
+    except Exception:
         await manager.disconnect(user_id)
 
 

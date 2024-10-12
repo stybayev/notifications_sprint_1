@@ -22,6 +22,7 @@ app.include_router(router_notification, prefix="/api/v1/notification")
 
 setup_dependencies(app)
 
+
 def create_queue():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
@@ -40,6 +41,7 @@ def create_queue():
     )
     logging.info('Queue for notifications created.')
     connection.close()
+
 
 if __name__ == '__main__':
     create_queue()

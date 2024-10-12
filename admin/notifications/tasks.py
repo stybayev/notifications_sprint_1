@@ -13,7 +13,8 @@ def send_notification_task(notification_id):
         if status_code == 200:
             logger.info(f"Уведомление '{notification}' успешно отправлено.")
         else:
-            logger.error(f"Не удалось отправить уведомление '{notification}'. Код состояния: {status_code}")
+            logger.error(f"Не удалось отправить уведомление '{notification}'. "
+                         f"Код состояния: {status_code}")
     except Notification.DoesNotExist:
         logger.error(f"Уведомление с id {notification_id} не существует.")
     except Exception as e:

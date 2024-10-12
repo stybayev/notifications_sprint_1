@@ -85,7 +85,7 @@ class RabbitMQConnection:
 
                         for user_id in receivers:
                             await manager.send_message(user_id, message_to_send)
-                            logger.debug(f"Отправлено сообщение пользователю {user_id}: {message_to_send}")
+                            logger.debug(f"Отправлено сообщение пользователю {user_id}: {message_to_send}")  # noqa
 
                     except Exception as e:
                         logger.error(f"Ошибка при обработке сообщения: {e}")
