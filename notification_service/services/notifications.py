@@ -33,7 +33,7 @@ class NotificationServiceABC(ABC):
         ...
 
     @abstractmethod
-    async def get_event_history(self, user_id: UUID) -> Notification:  # // TODO сделать пагинационную модель
+    async def get_event_history(self, user_id: UUID) -> Notification:
         ...
 
 
@@ -75,7 +75,7 @@ class NotificationService(NotificationServiceABC):
         )
         if event.service != 'admin_notifications':
             try:
-                notification = await self.notification_repository.post(obj_in=notification_create_dto)
+                notification = await self.notification_repository.post(obj_in=notification_create_dto)  # noqa
             except sqlalchemy.exc.IntegrityError as err:
                 logging.error("The event could not be accepted")
                 logging.error(err)

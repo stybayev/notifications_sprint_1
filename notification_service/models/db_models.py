@@ -1,11 +1,10 @@
-import enum
 import uuid
 
-from sqlalchemy import Column, Integer, DateTime, UUID, ForeignKey, String, Text, Boolean, BigInteger
+from sqlalchemy import (Column, Integer, DateTime, UUID,
+                        ForeignKey, String, Text, Boolean, BigInteger)
 from sqlalchemy.sql import func
 
 from notification_service.db.db import Base
-
 
 
 class Notification(Base):

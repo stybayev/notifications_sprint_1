@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Annotated, List
 
@@ -67,7 +66,8 @@ class Notification(models.Model):
 
     recurrence_rule = models.CharField(
         "Правило повторения (Crontab)", max_length=100, null=True, blank=True,
-        help_text="Введите crontab строку, например, '0 0 * * *' для ежедневной отправки в полночь.",
+        help_text="Введите crontab строку, например, "
+                  "'0 0 * * *' для ежедневной отправки в полночь.",
         default='* * * * *'
     )
 
