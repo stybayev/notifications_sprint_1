@@ -18,6 +18,23 @@ class DataBaseSettings(BaseSettings):
         return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'  # noqa
 
 
+class MongoDataBaseSettings(BaseSettings):
+    initdb_root_username: str = ...
+    initdb_root_password: str = ...
+    default_database: str = ...
+    host: str = ...
+    port: int = ...
+    collection: str = ...
+
+    class Config:
+        env_file = ".env"
+        env_prefix = "MONGO_"
+
+    @property
+    def url(self):
+        return f"mongodb://{self.initdb_root_username}:{self.initdb_root_password}@{self.host}:{self.port}"
+
+
 class Settings(BaseSettings):
     project_name: str = Field(default="Notification Service")
     description: str = Field(
@@ -27,6 +44,7 @@ class Settings(BaseSettings):
     uvicorn_host: str = Field(default="0.0.0.0", env="UVICORN_HOST")
     uvicorn_port: int = Field(default=8000, env="UVICORN_PORT")
     db = DataBaseSettings()
+    mongo_db = MongoDataBaseSettings()
     log_sql_queries: bool = False
 
     class Config:

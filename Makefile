@@ -13,3 +13,9 @@ psql-conn:
 clear:
 	docker system prune
 	docker volume prune
+
+run-mongo:
+	docker-compose -f docker-compose.mongo.yml up --build
+
+stop-mongo:
+	docker-compose -f docker-compose.mongo.yml down

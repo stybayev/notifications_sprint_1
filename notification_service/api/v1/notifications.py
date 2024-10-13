@@ -1,11 +1,12 @@
 import sys
 from http import HTTPStatus
+from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from notification_service.models.event import Event
-from notification_service.models.notification import NotificationHistory
-from notification_service.schemas.notification import NotificationCreateDto
+from notification_service.schemas.notification import NotificationCreateDto, NotificationHistoryDto
 from notification_service.services.notifications import NotificationServiceABC
 
 router = APIRouter()
@@ -27,11 +28,16 @@ async def post_event(
     return notification
 
 
-@router.get("/get_event_history", response_model=NotificationHistory)
+@router.get("/get_event_history", response_model=List[NotificationHistoryDto])
 async def get_notification_history(
         *,
-        service: None,
-) -> NotificationHistory or None:
-    # TODO: здесь реализуем получение истории уведомлений.
-    #  Надо решить какую бд будем использовать и реализовать репозиторий
-    pass
+        service: NotificationServiceABC = Depends(),
+        user_id: UUID
+) -> List[NotificationHistoryDto] or None:
+    notification_history = await service.get_event_history(user_id)
+    if not notification_history:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="There are no notifications"
+        )
+    return notification_history
