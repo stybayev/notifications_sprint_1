@@ -9,7 +9,7 @@ from aio_pika import connect, Message
 from fastapi.encoders import jsonable_encoder
 
 from notification_service.models.db_models import (Notification, NotificationToUser,
-                                                   Templates, Status, NotificationHistory)
+                                                   Templates, NotificationHistory)
 from notification_service.schemas.notification import Status
 from notification_service.models.event import Event
 from notification_service.schemas.notification import (NotificationCreateDto,
