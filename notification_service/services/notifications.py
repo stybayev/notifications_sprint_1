@@ -10,6 +10,7 @@ from fastapi.encoders import jsonable_encoder
 
 from notification_service.models.db_models import (Notification, NotificationToUser,
                                                    Templates, Status, NotificationHistory)
+from notification_service.schemas.notification import Status
 from notification_service.models.event import Event
 from notification_service.schemas.notification import (NotificationCreateDto,
                                                        NotificationToUserDto, NotificationHistoryDto)
@@ -78,10 +79,11 @@ class NotificationService(NotificationServiceABC):
             template_id=event.event_name,
             name=event.event_type,
             type=event.type.value,
+            delivery_method=event.delivery_method.value
         )
         if event.service != 'admin_notifications':
             try:
-                notification = await self.notification_repository.post(obj_in=notification_create_dto)
+                notification = await self.notification_repository.post(obj_in=notification_create_dto)  # noqa
             except sqlalchemy.exc.IntegrityError as err:
                 logging.error("The event could not be accepted")
                 logging.error(err)

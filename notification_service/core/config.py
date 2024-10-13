@@ -15,7 +15,7 @@ class DataBaseSettings(BaseSettings):
 
     @property
     def url(self):
-        return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'
+        return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'  # noqa
 
 
 class MongoDataBaseSettings(BaseSettings):
@@ -38,7 +38,8 @@ class MongoDataBaseSettings(BaseSettings):
 class Settings(BaseSettings):
     project_name: str = Field(default="Notification Service")
     description: str = Field(
-        default="A service for receiving events. Writes them to the database and add them to the RabbitMQ queue."
+        default="A service for receiving events. "
+                "Writes them to the database and add them to the RabbitMQ queue."
     )
     uvicorn_host: str = Field(default="0.0.0.0", env="UVICORN_HOST")
     uvicorn_port: int = Field(default=8000, env="UVICORN_PORT")

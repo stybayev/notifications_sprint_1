@@ -2,7 +2,8 @@ version: "3.9"
 
 x-configs: &common_config
   restart: always
-
+  env_file:
+    - ./.env
 
 services:
   django_admin:
@@ -16,8 +17,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - ./.env
+
+  websockets:
+    <<: *common_config
+    build:
+      context: ws
+      target: ${FASTAPI_ENV}
+    volumes:
+      - .:/app
+    ports:
+      - "8084:8084"
+    depends_on:
+      db:
+        condition: service_healthy
 
   notification_service:
     container_name: notification_service
@@ -46,8 +58,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    env_file:
-      - ./.env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
       interval: 10s
@@ -83,9 +93,10 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq  # Persist data
     healthcheck:
       test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 30s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis:alpine
@@ -96,6 +107,12 @@ services:
       - ${REDIS_PORT}:6379
     volumes:
       - redis_data:/var/lib/redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   celery:
     build: ./admin
@@ -132,6 +149,38 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
+
+  email:
+    build: ./worker
+    container_name: email
+    command: [ "sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8001" ]
+    volumes:
+      - .:/worker
+    ports:
+      - "8001:8001"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  worker:
+    build: ./worker
+    container_name: email_worker
+    command: [ "python", "worker/worker.py" ]
+    volumes:
+      - .:/worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app:/core
 
 volumes:
   postgres_data:

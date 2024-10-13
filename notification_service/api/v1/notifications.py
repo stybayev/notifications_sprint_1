@@ -1,3 +1,4 @@
+import sys
 from http import HTTPStatus
 from typing import List
 from uuid import UUID
@@ -17,6 +18,7 @@ async def post_event(
         service: NotificationServiceABC = Depends(),
         event: Event
 ) -> NotificationCreateDto or None:
+    print(f"{event=}", file=sys.stderr)
     notification = await service.post_event(event)
     if not notification:
         raise HTTPException(

@@ -31,12 +31,14 @@ class NotificationAdmin(admin.ModelAdmin):
     inlines = (NotificationAdminUsersInline, NotificationAdminGroupsInline)
     raw_id_fields = ("template",)
     actions = ("send_notification",)
-    list_display = ('name', 'scheduled_time', 'is_recurring', 'recurrence_rule', 'delivery_method')
+    list_display = ('name', 'scheduled_time', 'is_recurring',
+                    'recurrence_rule', 'delivery_method')
 
     fieldsets = (
         (None, {
             'fields': (
-            'name', 'template', 'type', 'delivery_method', 'scheduled_time', 'is_recurring', 'recurrence_rule')
+                'name', 'template', 'type', 'delivery_method',
+                'scheduled_time', 'is_recurring', 'recurrence_rule')
         }),
     )
 
@@ -50,12 +52,14 @@ class NotificationAdmin(admin.ModelAdmin):
             if notification.scheduled_time:
                 notification.schedule()
                 self.message_user(
-                    request, f"{notification} поставлено в расписание на отправку", messages.SUCCESS
+                    request, f"{notification} поставлено в расписание на отправку",
+                    messages.SUCCESS
                 )
             else:
                 send_notification_task.delay(notification.id)
                 self.message_user(
-                    request, f"{notification} поставлено в очередь на отправку", messages.SUCCESS
+                    request, f"{notification} поставлено в очередь на отправку",
+                    messages.SUCCESS
                 )
 
 
