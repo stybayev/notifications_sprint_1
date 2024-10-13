@@ -33,7 +33,7 @@ jobs:
     - name: Upload linter report
       uses: actions/upload-artifact@v3
       with:
-        name: lint-report
+        name: lint-reportz
         path: lint_report
 
     - name: Test with pytest
