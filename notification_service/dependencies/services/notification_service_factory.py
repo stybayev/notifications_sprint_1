@@ -16,7 +16,6 @@ from notification_service.services.notifications import (
     NotificationToUserRepository)
 
 
-
 @add_factory_to_mapper(NotificationServiceABC)
 @cache
 def post_event_service(
@@ -27,6 +26,7 @@ def post_event_service(
         notification_repository=NotificationRepository(Notification, db=session),
         template_repository=TemplateRepository(Templates, db=session),
 
-        notification_to_user_repository=NotificationToUserRepository(NotificationToUser, 
+        notification_to_user_repository=NotificationToUserRepository(NotificationToUser,
                                                                      db=session),
         history_repository=HistoryRepository(NotificationHistory, client=client)
+    )
